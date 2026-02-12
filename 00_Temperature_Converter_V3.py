@@ -72,6 +72,8 @@ class Converter:
 
 
     def check_temp(self,min_temp):
+        print("Min: ", min_temp)
+
 
 # main routine
 if __name__ == "__main__":
