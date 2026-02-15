@@ -1,8 +1,6 @@
 from tkinter import *
 import all_constants as c
 
-from attr.validators import disabled
-
 
 class Converter:
     """
@@ -38,10 +36,10 @@ class Converter:
         self.temp_entry.grid(row=2, padx=10, pady=10)
 
         error = "Please enter a number"
-        self.Answer_error = Label(self.temp_frame, text=error,
-                                  fg="#9C0000",
+        self.answer_error = Label(self.temp_frame, text=error,
+                                  fg="#004c99",
                                   font="Arial 16")
-        self.Answer_error.grid(row=3)
+        self.answer_error.grid(row=3)
 
         #conversion, help and history / export button
         self.button_frame = Frame(self.temp_frame)
@@ -49,7 +47,7 @@ class Converter:
 
         # button list (button text | bg color | row | column)
         button_details_list = [
-            ["To Celcius", "#990099", lambda:self.check_temp(c.ABS_ZERO_FAHRENHEIT), 0, 0],
+            ["To Celsius", "#990099", lambda:self.check_temp(c.ABS_ZERO_FAHRENHEIT), 0, 0],
             ["To Fahrenheit", "#009900", lambda:self.check_temp(c.ABS_ZERO_CELSIUS), 0, 1],
             ["Help / info", "#cc6600", "", 1, 0],
             ["History / Export", "#004c99", "", 1, 1],
@@ -74,20 +72,36 @@ class Converter:
     def check_temp(self,min_temp):
         print("Min: ", min_temp)
 
-        # retrive temperature to be converted
+        # retrieve temperature to be converted
         to_convert = self.temp_entry.get()
         print("to convert", to_convert)
 
         try:
             to_convert = float(to_convert)
             if to_convert >= min_temp:
-                self.Answer_error.config(text="Ur good")
+                error = ""
 
             else:
-                self.Answer_error.config(text="ur not good")
+                error= "Ur not good"
 
         except ValueError:
-            print("please enter a number!")
+            error = "please enter a number"
+
+        if error != "":
+            self.answer_error.config(text=error, fg="#9c0000")
+            self.temp_entry.config(bg="#f4cccc")
+
+        else:
+            self.temp_entry.config(bg="#ffffff")
+
+
+    def convert(self, min_temp):
+
+        if min_temp == c.ABS_ZERO_CELSIUS:
+            self.answer_error.config(text="Converting to F")
+
+        else:
+            self.answer_error.config(text="Converting to C")
 
 
 # main routine
