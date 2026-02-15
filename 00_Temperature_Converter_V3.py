@@ -38,10 +38,10 @@ class Converter:
         self.temp_entry.grid(row=2, padx=10, pady=10)
 
         error = "Please enter a number"
-        self.temp_error = Label(self.temp_frame, text=error,
-                                fg="#9C0000",
-                                font="Arial 16")
-        self.temp_error.grid(row=3)
+        self.Answer_error = Label(self.temp_frame, text=error,
+                                  fg="#9C0000",
+                                  font="Arial 16")
+        self.Answer_error.grid(row=3)
 
         #conversion, help and history / export button
         self.button_frame = Frame(self.temp_frame)
@@ -73,6 +73,21 @@ class Converter:
 
     def check_temp(self,min_temp):
         print("Min: ", min_temp)
+
+        # retrive temperature to be converted
+        to_convert = self.temp_entry.get()
+        print("to convert", to_convert)
+
+        try:
+            to_convert = float(to_convert)
+            if to_convert >= min_temp:
+                self.Answer_error.config(text="Ur good")
+
+            else:
+                self.Answer_error.config(text="ur not good")
+
+        except ValueError:
+            print("please enter a number!")
 
 
 # main routine
