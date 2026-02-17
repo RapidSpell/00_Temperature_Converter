@@ -13,6 +13,8 @@ class Converter:
         Temperature converter GUI
         """
 
+        self.all_calculations_list = []
+
         self.temp_frame = Frame(padx=10, pady=10)
         self.temp_frame.grid()
 
@@ -67,15 +69,13 @@ class Converter:
             self.button_ref_list.append(self.make_button)
 
         # retrieve 'history / export' button and disable it at the start
-        self.to_history_button = self.button_ref_list[3].config(state=DISABLED)
+        self.to_history_button = self.button_ref_list[3]
+        self.to_history_button.config(state=DISABLED)
 
 
     def check_temp(self,min_temp):
-        print("Min: ", min_temp)
-
         # retrieve temperature to be converted
         to_convert = self.temp_entry.get()
-        print("to convert", to_convert)
 
         #checks that amount to be converted is a number above absolute zero
         try:
@@ -92,21 +92,32 @@ class Converter:
 
         if error != "":
             self.answer_error.config(text=error, fg="#9c0000")
-            self.temp_entry.config(bg="#f4cccc")
-            self.temp_entry.delete(0, END)
+            self.temp_entry.config(bg="#f4CCCC")
 
         else:
             self.answer_error.config(fg="#004c99")
             self.temp_entry.config(bg="#ffffff")
 
+        self.temp_entry.delete(0, END)
+
 
     def convert(self, min_temp, to_convert):
 
         if min_temp == c.ABS_ZERO_CELSIUS:
-            self.answer_error.config(text=f"Converting {to_convert}°C to °F")
+            answer = cr.to_fahrenheit(to_convert)
+            answer_statement = f"{to_convert}°C is {answer}°F"
+            self.answer_error.config(text=f"{to_convert}°C is {answer}°F")
 
         else:
-            self.answer_error.config(text=f"Converting {to_convert}°F to °C")
+            answer = cr.to_celsius(to_convert)
+            answer_statement = f"{to_convert}°F is {answer}°C"
+
+        # Enable history_button as soon as we have a valid calculation
+        self.to_history_button.config(state=NORMAL)
+
+        self.answer_error.config(text=answer_statement, fg="#004c99")
+        self.all_calculations_list.append(answer_statement)
+        print(self.all_calculations_list)
 
 
 # main routine
@@ -115,4 +126,3 @@ if __name__ == "__main__":
     root.title("Temperature Converter")
     Converter()
     root.mainloop()
-
