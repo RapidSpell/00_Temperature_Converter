@@ -1,5 +1,6 @@
 from tkinter import *
 from functools import partial # To prevent unwanted windows
+import all_constants as c
 
 
 class Converter:
@@ -11,6 +12,10 @@ class Converter:
         """
         Temperature converter GUI
         """
+
+        self.all_calculations_list = ['10.0°F is -12°C', '20.0°F is -7°C',
+                                      '30.0°F is -1°C', '40.0°F is 4°C',
+                                      '60.0°F is 16°C']
 
         self.temp_frame = Frame(padx=10, pady=10)
         self.temp_frame.grid()
@@ -30,7 +35,7 @@ class Converter:
         Opens dialogue box and disables history button
         (so that users can't create multiple history tabs)
         """
-        HistoryExport(self)
+        HistoryExport(self, self.all_calculations_list)
 
 
 class HistoryExport:
@@ -38,12 +43,8 @@ class HistoryExport:
     Displays history dialogue box
     """
 
-    def __init__(self, partner):
-        # setup dialogue box and background color
-
-        green_back = "#D5E8D4"
-        peach_back = "#ffe6cc"
-
+    def __init__(self, partner, calculations):
+        # setup dialogue box
         self.history_box = Toplevel()
 
         # Disable history button
@@ -57,27 +58,52 @@ class HistoryExport:
         self.history_frame = Frame(self.history_box)
         self.history_frame.grid()
 
+        #background color and text for calculation area
+        if len(calculations) <= c.Max_CALCS:
+            calc_back = "#D5E8D4"
+            calc_amount = "all your"
+
+        else:
+            calc_back = "#FFE6Cc"
+            calc_amount = f"showing {c.Max_CALCS} / {len(calculations)}"
+
         # strings for 'long' labels
-        recent_intro_text = ("bellow are your recent calculations - showing "
-                             "3 / 3 calculates. all calculations are "
-                             "shown to the nearest degree")
+        recent_intro_text = (f"bellow are your recent calculations - {calc_amount} all calculations are "
+                             f"shown to the nearest degree")
+
+        # create string from calculations list (newest calculations first)
+        newest_first_string = ""
+        newest_first_list = list(reversed(calculations))
+
+        # last item added in outside the for loop so that the pacing is correct
+        if len(newest_first_list) <= c.Max_CALCS:
+
+            for item in newest_first_list[:-1]:
+                newest_first_string += item + "\n"
+
+            newest_first_string += newest_first_list[-1]
+
+        # If we have more than Five items...
+        else:
+            for item in newest_first_list[:c.Max_CALCS-1]:
+                newest_first_string += item + "\n"
+
+            newest_first_string += newest_first_list[c.Max_CALCS-1]
 
         export_instruction_txt = ("please push <Export> to save your calculations in "
                                   "file. If the filename already exists, it will be replaced")
 
-        calculation = ""
-
         # label list (label txt | format | bg)
         history_labels_list = [
             ["History / Export", "Arial 16 bold", None],
-            [recent_intro_txt, "Arial 11", None],
-            ["calculations list", "Arial 14", green_back],
+            [recent_intro_text, "Arial 11", None],
+            [newest_first_string, "Arial 14", calc_back],
             [export_instruction_txt, "Arial 11", None],
         ]
 
         history_label_ref = []
         for count, item in enumerate(history_labels_list):
-            make_label = Label(self.history_box, text=iten[0],
+            make_label = Label(self.history_box, text=item[0],
                                bg=item[2],
                                wraplength=300, justify="left", pady=10, padx=20)
             make_label.grid(row=count)
@@ -91,8 +117,6 @@ class HistoryExport:
         # make frame to hold buttons (two columns)
         self.hist_button_frame = Frame(self.history_box)
         self.hist_button_frame.grid(row=4)
-
-        button_ref_list = []
 
         # button list (button text | bg color | command | row | column)
         button_details_list = [
